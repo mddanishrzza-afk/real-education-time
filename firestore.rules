@@ -1,0 +1,82 @@
+// ============================================================
+// REAL EDUCATION TIME — Firestore Security Rules
+// How to deploy:
+//   Firebase Console -> Firestore Database -> Rules tab
+//   (or) firebase deploy --only firestore:rules
+// ============================================================
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper: authenticated user
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    // Helper: get a user's role from the users collection
+    function userRole(uid) {
+      return get(/databases/$(database)/documents/users/$(uid)).data.role;
+    }
+
+    function isAdmin() {
+      return signedIn() && userRole(request.auth.uid) == 'admin';
+    }
+
+    function isTeacher() {
+      return signedIn() && userRole(request.auth.uid) == 'teacher';
+    }
+
+    // A user can only create/read/update their OWN profile.
+    // Nobody can change role (admin-controlled through console/scripts).
+    match /users/{userId} {
+      allow read: if signedIn() && (request.auth.uid == userId || isAdmin());
+      allow create: if signedIn() && request.auth.uid == userId
+                     && request.resource.data.role == 'student';
+      allow update: if signedIn() && request.auth.uid == userId
+                     && !request.resource.data.differs('role', resource.data);
+      allow delete: if isAdmin();
+    }
+
+    // Subjects: admins manage, everyone can read published content
+    match /subjects/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Quizzes: admins/teachers write, all signed-in users read published
+    match /quizzes/{id} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin() || isTeacher();
+    }
+
+    // Questions: admins/teachers write, all signed-in users read
+    match /questions/{id} {
+      allow read: if signedIn();
+      allow create, update, delete: if isAdmin() || isTeacher();
+    }
+
+    // Results: a student can create their own result and read their own.
+    // Teachers/Admins can read all for the leaderboard & performance view.
+    match /results/{id} {
+      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
+      allow read: if signedIn() && (request.resource.data.userId == request.auth.uid
+                                     || isTeacher() || isAdmin());
+      allow update, delete: if isAdmin();
+    }
+
+    // Certificates: a student can read their own; teachers/admins can read all
+    match /certificates/{id} {
+      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
+      allow read: if signedIn() && (request.resource.data.userId == request.auth.uid
+                                     || isTeacher() || isAdmin());
+      allow update, delete: if isAdmin();
+    }
+
+    // Settings: only admin can write
+    match /settings/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+  }
+}

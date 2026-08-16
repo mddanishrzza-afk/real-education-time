@@ -1,0 +1,21 @@
+// ============================================================
+// REAL EDUCATION TIME — SIMPLE FIREBASE RULES (start here)
+// These let anyone logged-in read/write so you can test easily.
+// NOTE: This is for development/testing. When your app is ready
+// for launch, switch to the STRICT rules in firestore.rules.
+// ============================================================
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Logged-in users can read and write everything for now.
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    match /{document=**} {
+      allow read, write: if signedIn();
+    }
+  }
+}

@@ -1,0 +1,23 @@
+node_modules
+.next
+.env
+.env.*
+!.env.example
+*.log
+prisma/dev.db
+prisma/dev.db-journal
+coverage
+.DS_Store
+*.keystore
+*.jks
+android/.gradle
+android/build
+android/app/build
+android/*.apk
+android/*.aab
+android/play-account-key.json
+*.tsbuildinfo
+prisma/dev.db*
+
+# Local Playwright browser dependencies fetched in the sandbox (never part of the app).
+.playwright-deps

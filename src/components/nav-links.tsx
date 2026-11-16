@@ -1,11 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { BarChart3, BookOpenText, ClipboardCheck, KeyRound, LayoutDashboard, MessageCircleQuestion, ShieldCheck } from "lucide-react";
+import { BarChart3, BookOpenText, CalendarCheck, ClipboardCheck, KeyRound, LayoutDashboard, MessageCircleQuestion, ShieldCheck } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 const items = [
   { href: "/dashboard", label: "Home", icon: LayoutDashboard },
+  { href: "/study-plan", label: "Plan", icon: CalendarCheck },
   { href: "/learn", label: "Learn", icon: BookOpenText },
   { href: "/tests", label: "Tests", icon: ClipboardCheck },
   { href: "/doubts", label: "Tutor", icon: MessageCircleQuestion },
@@ -20,7 +21,7 @@ export function NavLinks({ mobile = false, role = "STUDENT" }: { mobile?: boolea
     : items;
   if (mobile) {
     return (
-      <nav className={role === "ADMIN" ? "grid grid-cols-2 gap-1" : "grid grid-cols-6 gap-0.5"} aria-label="Main navigation">
+      <nav className={role === "ADMIN" ? "grid grid-cols-2 gap-1" : "grid grid-cols-7 gap-0.5"} aria-label="Main navigation">
         {visibleItems.map(({ href, label, icon: Icon }) => {
           const active = pathname === href || pathname.startsWith(`${href}/`);
           return (

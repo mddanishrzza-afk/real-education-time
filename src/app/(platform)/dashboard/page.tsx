@@ -27,7 +27,7 @@ export default async function DashboardPage() {
     <div>
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div><p className="text-sm font-bold text-brand-600">नमस्ते, {user.name.split(" ")[0]} 👋</p><h1 className="mt-1 text-3xl font-black tracking-tight sm:text-4xl">Here&apos;s your learning pulse.</h1><p className="mt-2 text-sm text-muted">{user.studentProfile.academicClass?.nameEn} • {user.studentProfile.board?.nameEn}</p></div>
-        <div className="flex items-center gap-3"><div className="surface flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-black"><Flame size={18} className="text-orange-500" /> {user.studentProfile.currentStreak} day streak</div><div className="surface hidden items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-black sm:flex"><Trophy size={18} className="text-amber-500" /> {user.studentProfile.xp} XP</div></div>
+        <div className="flex flex-wrap items-center gap-3"><Link href="/study-plan" className="focus-ring surface flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-black text-brand-600 hover:bg-brand-50 dark:hover:bg-brand-500/10">Study Plan <ArrowRight size={15} /></Link><div className="surface flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-black"><Flame size={18} className="text-orange-500" /> {user.studentProfile.currentStreak} day streak</div><div className="surface hidden items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-black sm:flex"><Trophy size={18} className="text-amber-500" /> {user.studentProfile.xp} XP</div></div>
       </div>
 
       <section className="mt-7 grid gap-3 sm:grid-cols-2 xl:grid-cols-4" aria-label="Performance summary">

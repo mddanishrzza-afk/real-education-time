@@ -3,6 +3,7 @@ import { Logo } from "@/components/logo";
 import { NavLinks } from "@/components/nav-links";
 import { LogoutButton } from "@/components/logout-button";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { NotificationBell } from "@/components/notification-bell";
 import { InstallAppBanner } from "@/components/install-app-banner";
 import { initials } from "@/lib/format";
 
@@ -32,6 +33,7 @@ export function AppShell({ user, children }: { user: ShellUser; children: React.
               <Languages size={16} /> {user.preferredLanguage === "HINDI" ? "हिंदी" : user.preferredLanguage === "ENGLISH" ? "English" : "Hinglish"}
             </div>
             <div className="flex items-center gap-2.5">
+              <NotificationBell />
               <ThemeToggle />
               <div className="ml-1 hidden items-center gap-3 sm:flex">
                 <span className="grid size-10 place-items-center rounded-xl bg-brand-100 text-sm font-black text-brand-700 dark:bg-brand-500/20 dark:text-brand-200">{initials(user.name)}</span>

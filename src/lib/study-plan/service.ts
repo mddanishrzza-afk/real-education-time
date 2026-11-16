@@ -1,5 +1,6 @@
 import { ApiError } from "@/lib/api";
 import { prisma } from "@/lib/db";
+import { createNotification } from "@/lib/notifications/service";
 import {
   buildDeterministicPlan,
   computeNextRevisionSchedule,
@@ -239,6 +240,15 @@ export async function generateStudentStudyPlan(
       });
     }
   }
+
+  await createNotification({
+    userId: evidence.profile.userId,
+    type: "STUDY_REMINDER",
+    title: "Your personalized study plan is ready",
+    message: `Scheduled ${tasks.length} task(s) for ${availableMinutes} minutes today.`,
+    actionUrl: "/study-plan",
+    dedupeWindowMinutes: 5,
+  }).catch(() => undefined);
 
   return { plan, aiRecommendation: aiResult?.recommendation ?? null, provider: aiResult?.provider ?? "RULE_ENGINE" };
 }

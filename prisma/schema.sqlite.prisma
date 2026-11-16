@@ -26,6 +26,22 @@ enum Language {
   ENGLISH
   HINDI
   HINGLISH
+  URDU
+  BENGALI
+}
+
+enum QuestionSourceType {
+  PYQ
+  ADMIN_CREATED
+  AI_GENERATED
+  IMPORTED_PENDING
+}
+
+enum LicenseStatus {
+  VERIFIED_OPEN
+  LICENSED
+  FAIR_USE_REVIEW
+  RESTRICTED
 }
 
 enum PreparationLevel {
@@ -537,10 +553,76 @@ model Question {
   testQuestions    TestQuestion[]
   answers          Answer[]
   reviews          ContentReview[]
+  metadata         QuestionMetadata?
+  translations     QuestionTranslation[]
 
   @@index([topicId, difficulty, status])
   @@index([examId, status])
   @@index([contentHash])
+}
+
+model AcademicSession {
+  id        String   @id @default(cuid())
+  label     String   @unique
+  startYear Int
+  endYear   Int
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+model QuestionMetadata {
+  id                String             @id @default(cuid())
+  questionId        String             @unique
+  boardId           String?
+  academicClassId   String?
+  subjectId         String?
+  sessionId         String?
+  examYear          Int?
+  paperCode         String?
+  paperSet          String?
+  questionNumber    String?
+  originalLanguage  Language           @default(ENGLISH)
+  sourceType        QuestionSourceType @default(ADMIN_CREATED)
+  licenseStatus     LicenseStatus      @default(FAIR_USE_REVIEW)
+  sourceDocumentUrl String?
+  verifiedById      String?
+  verifiedAt        DateTime?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  question          Question           @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@index([boardId, academicClassId, subjectId, examYear])
+  @@index([sourceType, licenseStatus])
+}
+
+model QuestionTranslation {
+  id            String   @id @default(cuid())
+  questionId    String
+  language      Language
+  stem          String
+  explanation   String?
+  markingScheme String?
+  isRtl         Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  question      Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@unique([questionId, language])
+  @@index([language])
+}
+
+model QuestionImportBatch {
+  id            String   @id @default(cuid())
+  uploadedById  String
+  boardId       String?
+  sourceName    String
+  sourceUrl     String?
+  status        String   @default("PENDING_REVIEW")
+  totalItems    Int      @default(0)
+  approvedItems Int      @default(0)
+  createdAt     DateTime @default(now())
+
+  @@index([uploadedById, status])
 }
 
 model QuestionOption {
